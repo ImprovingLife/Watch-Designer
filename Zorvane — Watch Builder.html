@@ -6325,5 +6325,195 @@ function chronoAct(a){
 init();
 
 </script>
+  <script>
+/* ============================================================
+   ZORVANE — EXPANSION PACK
+   Appends new options to existing lists. Does not modify any
+   original line. Overrides shapeR and handParts to handle
+   new shape/hand IDs, delegating everything else to the originals.
+   ============================================================ */
+(function ZorvaneExpansion(){
+  'use strict';
+
+  /* ---- 1. More case shapes ---- */
+  [['Pillow','pillow'],['Rectangle','rect'],['Ellipse','ellipse'],
+   ['Asymmetric','asym'],['Dodecagon','dodecagon'],['Pentagon','pentagon']]
+    .forEach(function(s){ O.shape.push({n:s[0], id:s[1]}); });
+
+  var _shapeR = shapeR;
+  shapeR = function(id, phi, a, b){
+    var c = Math.cos(phi), s = Math.sin(phi);
+    switch(id){
+      case 'pillow':    return sup(c,s,a,b,2.4);
+      case 'rect':      return sup(c,s,a,b,7.5);
+      case 'ellipse':   return 1/Math.sqrt((c/a)*(c/a)+(s/b)*(s/b));
+      case 'asym':      return sup(c,s,a,b,2.3)*(1+.07*Math.cos(phi)+.04*Math.sin(2*phi));
+      case 'dodecagon': return polyR(c,s,a,b,12,0,18);
+      case 'pentagon':  return polyR(c,s,a,b,5,0,16);
+      default:          return _shapeR(id, phi, a, b);
+    }
+  };
+
+  /* ---- 2. More dial colors ---- */
+  [['Rose Gold','#d9a08a'],['Cognac','#a85a3a'],['Espresso','#2e1c10'],
+   ['Ink','#0a1224'],['Storm','#3a4048'],['Forest','#1a3a20'],['Sea Foam','#a8d8c8'],
+   ['Camel','#c19a6b'],['Mustard','#c99a1c'],['Terracotta','#c45f3a'],['Cherry','#8e1a24'],
+   ['Grape','#5a2a72'],['Lilac','#c2a8d8'],['Powder','#b8d0e0'],['Sand','#d8c4a0'],
+   ['Pumice','#8c8c84'],['Pistachio','#c8d8a8'],['Cobalt','#1e3fa8'],['Rust','#8e3a1a'],
+   ['Bone','#e0d8c4'],['Plum','#4a1a3a'],['Blush','#e8c0b8'],['Glacier','#c8e0e8'],
+   ['Copper Rose','#c88a72'],['Midnight Blue','#0a1a3a'],['Deep Forest','#0a2818']]
+    .forEach(function(d){ O.dialColor.push({n:d[0], c:d[1], id:d[0]}); });
+
+  /* ---- 3. More band colors ---- */
+  [['Slate','#4a5560'],['Olive Drab','#5c5a3a'],['Camel','#c4a878'],
+   ['Sky Blue','#7fb0d8'],['Salmon','#e09070'],['Mauve','#a880a0'],['Charcoal','#2a2e34'],
+   ['Bone','#e0d4b4'],['Brick','#a04832'],['Teal Green','#2c7a6a'],['Apricot','#f0b880'],
+   ['Lime','#b0d040'],['Deep Navy','#1a2a5a'],['Wine','#7a2438'],['Moss','#4a5a3a'],
+   ['Dove','#b8b0a8'],['Terracotta','#c45f3a'],['Slate Blue','#5a6a8a'],['Forest','#2a4a3a'],
+   ['Aubergine','#3a1a3a'],['Cream','#e8e0c8'],['Burgundy','#6a1a28'],['Saddle','#8a5a3a']]
+    .forEach(function(d){ O.bandColor.push({n:d[0], c:d[1]}); });
+
+  /* ---- 4. More NATO patterns ---- */
+  [{n:'Bond',      s:['#0f1a2c','#c8b87a','#0f1a2c']},
+   {n:'Bond 2',    s:['#0f1a2c','#5a6a7c','#0f1a2c']},
+   {n:'Ranger',    s:['#2a3a2a','#c8a048','#2a3a2a']},
+   {n:'Commando',  s:['#1a1a1a','#6a7a3a','#1a1a1a']},
+   {n:'Vostok',    s:['#1e3a6a','#c8a048','#1e3a6a']},
+   {n:'Coast Guard',s:['#1e4a7a','#f0e8d0','#c82030']},
+   {n:'Arctic',    s:['#f0f4f8','#1e3a6a','#f0f4f8']},
+   {n:'Lizard Camo',s:['#4a5a3a','#2a3a1a','#6a7a4a','#2a3a1a','#4a5a3a']},
+   {n:'Urban',     s:['#2a2a2a','#8a8a7a','#2a2a2a']},
+   {n:'Night Ops', s:['#0a0a0a','#3a3a3a','#0a0a0a']}]
+    .forEach(function(n){ O.nato.push(n); });
+
+  /* ---- 5. More stitch colors ---- */
+  [{n:'Ecru',c:'#e8dcc4'},{n:'Tan',c:'#c8a878'},{n:'Charcoal',c:'#3a3a40'},
+   {n:'Navy',c:'#2a3a5a'},{n:'Burgundy',c:'#6a2432'},{n:'Rust',c:'#a85030'},
+   {n:'Teal',c:'#2a6a70'},{n:'Sage',c:'#8ea088'},{n:'Slate',c:'#5a5a6a'},
+   {n:'Camel',c:'#c4a878'}]
+    .forEach(function(s){ O.stitch.push(s); });
+
+  /* ---- 6. More band types (all soft, use existing leather renderer) ---- */
+  [{n:'Sailcloth',id:'sailcloth',k:'s',col:1,st:1},
+   {n:'Kevlar',id:'kevlar',k:'s',col:1},
+   {n:'Carbon Fiber',id:'carbonfiber',k:'s',col:1,st:1},
+   {n:'Vintage Pull-Up',id:'pullup',k:'s',col:1,st:1},
+   {n:'Python',id:'python',k:'s',col:1,st:1},
+   {n:'Tropic Rubber',id:'tropic',k:'s',col:1},
+   {n:'Nubuck',id:'nubuck',k:'s',col:1,st:1},
+   {n:'Denim',id:'denim',k:'s',col:1,st:1},
+   {n:'Woven Perlon',id:'perlon',k:'s',col:1},
+   {n:'Ballistic Nylon',id:'ballistic',k:'s',col:1},
+   {n:'Angular Rubber',id:'angular',k:'s',col:1},
+   {n:'Hirsch Leather',id:'hirsch',k:'s',col:1,st:1},
+   {n:'Lizard',id:'lizard',k:'s',col:1,st:1},
+   {n:'Leather Cuff',id:'cuff',k:'s',col:1,st:1},
+   {n:'Parachute',id:'parachute',k:'s',col:1},
+   {n:'Silicone',id:'silicone',k:'s',col:1},
+   {n:'Saffiano',id:'saffiano',k:'s',col:1,st:1},
+   {n:'Epsom Leather',id:'epsom',k:'s',col:1,st:1},
+   {n:'Togo Leather',id:'togo',k:'s',col:1,st:1},
+   {n:'Box Calf',id:'boxcalf',k:'s',col:1,st:1},
+   {n:'Shell Cordovan',id:'cordovan',k:'s',col:1,st:1},
+   {n:'Stingray',id:'stingray',k:'s',col:1,st:1},
+   {n:'Cork',id:'cork',k:'s',col:1},
+   {n:'Cuff Bracelet',id:'cuffbrace',k:'s',col:1,st:1}]
+    .forEach(function(b){ O.bandType.push(b); });
+
+  /* ---- 7. More hand styles ---- */
+  [{n:'Cathedral',id:'cathedral'},
+   {n:'Baton Broad',id:'batonb'},
+   {n:'Modern Sport',id:'sport'},
+   {n:'Diamond Tip',id:'dtip'},
+   {n:'Stadium',id:'stadium'},
+   {n:'Flèche',id:'fleche'}]
+    .forEach(function(h){
+      O.handStyle.push(h);
+      O.minStyle.push({n:h.n, id:h.id});
+    });
+
+  var _handParts = handParts;
+  handParts = function(st, L, w, hour, k, fills){
+    if(['cathedral','batonb','sport','dtip','stadium','fleche'].indexOf(st) < 0)
+      return _handParts(st, L, w, hour, k, fills);
+    var t = (hour ? .12 : .16) * L, f = fx;
+    var M = function(){ return Array.prototype.slice.call(arguments).map(f).join(' '); };
+    var b = '', l = '';
+    switch(st){
+      case 'cathedral':
+        b = '<path d="M'+M(-w/2,t)+'V'+f(-L*.6)+'L0 '+f(-L)+'L'+M(w/2,-L*.6)+'V'+f(t)+'Z"/>';
+        l = '<path d="M'+M(-w*.26,-L*.06)+'V'+f(-L*.5)+'L0 '+f(-L*.86)+'L'+M(w*.26,-L*.5)+'V'+f(-L*.06)+'Z"/>';
+        break;
+      case 'batonb':
+        b = '<path d="M'+M(-w*.75,t)+'V'+f(-L)+'H'+f(w*.75)+'V'+f(t)+'Z"/>';
+        l = '<path d="M'+M(-w*.4,-L*.06)+'V'+f(-L*.93)+'H'+f(w*.4)+'V'+f(-L*.06)+'Z"/>';
+        break;
+      case 'sport':
+        b = '<path d="M'+M(-w*.55,t)+'V'+f(-L*.85)+'L0 '+f(-L)+'L'+M(w*.55,-L*.85)+'V'+f(t)+'Z"/>';
+        l = '<path d="M'+M(-w*.28,-L*.08)+'V'+f(-L*.82)+'L0 '+f(-L*.93)+'L'+M(w*.28,-L*.82)+'V'+f(-L*.08)+'Z"/>';
+        break;
+      case 'dtip':
+        b = '<path d="M'+M(-w*.35,t)+'V'+f(-L*.9)+'L0 '+f(-L)+'L'+M(w*.35,-L*.9)+'V'+f(t)+'Z"/>';
+        l = '<path d="M0 '+f(-L*.86)+'L'+M(w*.35,-L*.72)+'L0 '+f(-L*.6)+'L'+M(-w*.35,-L*.72)+'Z"/>';
+        break;
+      case 'stadium':
+        b = '<path d="M'+M(-w/2,t)+'V'+f(-L*.95)+'Q'+M(-w/2,-L)+' '+M(0,-L)+'Q'+M(w/2,-L)+' '+M(w/2,-L*.95)+'V'+f(t)+'Z"/>';
+        l = '<path d="M'+M(-w*.26,-L*.06)+'V'+f(-L*.9)+'Q'+M(-w*.26,-L*.94)+' 0 '+f(-L*.94)+'Q'+M(w*.26,-L*.94)+' '+M(w*.26,-L*.9)+'V'+f(-L*.06)+'Z"/>';
+        break;
+      case 'fleche':
+        b = '<path d="M'+M(-w*.5,t)+'V'+f(-L*.55)+'L0 '+f(-L)+'L'+M(w*.5,-L*.55)+'V'+f(t)+'Z"/>';
+        l = '<path d="M0 '+f(-L*.9)+'L'+M(w*.22,-L*.62)+'L0 '+f(-L*.4)+'L'+M(-w*.22,-L*.62)+'Z"/>';
+        break;
+    }
+    return {b: b, l: l};
+  };
+
+  /* ---- 8. More marker colors, hand colors, seconds colors ---- */
+  [{n:'Champagne',c:'#e8d9a8'},{n:'Bronze',c:'#b87840'},{n:'Platinum',c:'#dde2e8'},
+   {n:'Slate',c:'#5a626c'},{n:'Cream',c:'#ede3c8'},{n:'Navy',c:'#1a2a4a'},
+   {n:'Forest',c:'#2a4a2a'},{n:'Burgundy',c:'#6a1a28'}]
+    .forEach(function(m){ O.markerColor.push(m); });
+
+  [{n:'Champagne',c:'#e8d9a8'},{n:'Bronze',c:'#b87840'},{n:'Platinum',c:'#dde2e8'},
+   {n:'Slate',c:'#5a626c'},{n:'Navy',c:'#1a2a4a'},{n:'Forest',c:'#2a4a2a'}]
+    .forEach(function(m){ O.handColor.push(m); });
+
+  [{n:'Champagne',c:'#e8d9a8'},{n:'Lime',c:'#b0e020'},{n:'Cyan',c:'#20c8e0'},
+   {n:'Magenta',c:'#e020a0'},{n:'Violet',c:'#7a20e0'}]
+    .forEach(function(m){ O.secColor.push(m); });
+
+  /* ---- 9. More bezel insert colors ---- */
+  [{n:'Bronze',c:['#8a5a2a']},{n:'Forest',c:['#2a4a2a']},{n:'Plum',c:['#3a1a3a']},
+   {n:'Slate',c:['#4a5560']},{n:'Sand',c:['#c8b080']},{n:'Coral',c:['#e0705a']}]
+    .forEach(function(m){ O.insert.push(m); });
+
+  /* ---- 10. More metals (case, bezel, crown, buckle, band) ---- */
+  [{id:'ta', n:'Tantalum',       p:['#a8b0bc','#7c8492','#5a626e','#383e48','#1c2026'], pr:12, dn:16.6},
+   {id:'rh', n:'Rhodium',        p:['#ffffff','#f0f2f5','#d0d4d9','#9ca2a8','#5c6268'], pr:14, dn:12.4},
+   {id:'pd', n:'Palladium',      p:['#f8f9fb','#dfe3e8','#b8bdc4','#868b92','#4e5258'], pr:11, dn:12.0}]
+    .forEach(function(m){
+      METALS.push(m);
+      MBY[m.id] = m;
+      O.metal.push({n:m.n, id:m.id, m:m});
+      O.bezelMetal.push({n:m.n, id:m.id, m:m}); /* bezelMetal/crownMetal/buckle/bandMetal/centerMetal all share MM */
+    });
+
+  /* ---- 11. Recompute total variant count ---- */
+  try { TOTAL = countVariants(); } catch(e) {}
+
+  /* ---- 12. Re-render so all new options appear ---- */
+  try {
+    if (typeof renderSubs === 'function') renderSubs();
+    if (typeof renderBody === 'function') renderBody(null);
+    if (typeof build === 'function') build();
+    if (typeof updatePills === 'function') updatePills();
+  } catch(e){ console.warn('Post-expansion rebuild:', e); }
+
+  console.log('Expansion loaded:', O.shape.length+' shapes,',
+    O.dialColor.length+' dial colors,', O.bandColor.length+' strap colors,',
+    O.bandType.length+' band types,', O.handStyle.length+' hand styles,',
+    O.metal.length+' metals');
+})();
+</script>
 </body>
 </html>
